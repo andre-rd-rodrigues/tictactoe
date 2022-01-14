@@ -1,0 +1,23 @@
+#game-container {
+  display: flex;
+}
+
+.game-square {
+  background-color: $dark-variant;
+  margin: 15px 15px 15px 0px;
+  height: 100px;
+  width: 100px;
+  box-shadow: 0 5px 3px rgba(0, 0, 0, 0.349);
+  border-radius: 15px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  &:hover {
+    background-color: #305161;
+  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & img {
+    width: 50px;
+  }
+}
