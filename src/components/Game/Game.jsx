@@ -6,8 +6,8 @@ import oval from "../../assets/img/o.png";
 import { allEqual } from "../../utilities/methods";
 import { originalMatrix } from "../../utilities/localDb";
 const cloneDeep = require("lodash.clonedeep");
-
-function Game() {
+const random = require("lodash.random");
+const Game = () => {
   const [matrix, setMatrix] = useState([
     {
       colId: 1,
@@ -44,12 +44,13 @@ function Game() {
     }
   ]);
   const [lastestType, setLastestType] = useState("oval");
-  const [userType, setUserType] = useState(undefined);
   const [points, setPoints] = useState({
     user: 0,
     cpu: 0
   });
   const [winnerType, setWinnerType] = useState(undefined);
+  const [tie, setTie] = useState(false);
+  const [userType, setUserType] = useState("cross");
 
   /* Select */
   const handleSelect = (colId, squareId) => {
@@ -169,6 +170,46 @@ function Game() {
   const handleRestart = () => {
     setMatrix(originalMatrix);
     setWinnerType(undefined);
+    setLastestType("oval");
+  };
+  const randomChoice = () => {
+    let matrixCopy = cloneDeep(matrix);
+
+    const allEmptySquares = matrixCopy.flatMap((col) =>
+      col.colRow.rowSquares.filter((square) => !square.selected)
+    );
+
+    if (allEmptySquares.length === 0) return setTie(true);
+
+    const randomEmptyIndex = random(0, allEmptySquares.length - 1);
+    const randomSquareId = allEmptySquares[randomEmptyIndex].id;
+
+    const emptyRandomSquareCoordenates = () => {
+      const coordenates = [];
+      for (let i = 0; i < matrixCopy.length; i++) {
+        matrixCopy[i].colRow.rowSquares.forEach((element, index) => {
+          if (element.id === randomSquareId)
+            return coordenates.push(matrixCopy[i]);
+        });
+      }
+      return coordenates[0];
+    };
+    const randomSquareColIndex = matrixCopy.findIndex(
+      (col) => col.colId === emptyRandomSquareCoordenates().colId
+    );
+    const randomSquareRowIndex = matrixCopy[
+      randomSquareColIndex
+    ].colRow.rowSquares.findIndex((square) => square.id === randomSquareId);
+
+    matrixCopy[randomSquareColIndex].colRow.rowSquares[
+      randomSquareRowIndex
+    ].selected = true;
+    matrixCopy[randomSquareColIndex].colRow.rowSquares[
+      randomSquareRowIndex
+    ].type = "oval";
+
+    setMatrix(matrixCopy);
+    setLastestType("oval");
   };
 
   /* Lifecycle */
@@ -177,6 +218,12 @@ function Game() {
     checkWinner();
   }, [matrix, lastestType]);
 
+  useEffect(() => {
+    if (lastestType === "cross" && !winnerType)
+      return setTimeout(() => {
+        randomChoice();
+      }, [300]);
+  }, [lastestType]);
   return (
     <div id="game-container">
       <Info
@@ -188,6 +235,6 @@ function Game() {
       <GameResult winnerType={winnerType} onExited={() => handleRestart()} />
     </div>
   );
-}
+};
 
 export default Game;
