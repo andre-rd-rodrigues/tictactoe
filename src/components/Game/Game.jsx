@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import GameResult from "../GameResult/GameResult";
+import Info from "../GameInfo/Info";
 import cross from "../../assets/img/cross.png";
 import oval from "../../assets/img/o.png";
 import { allEqual } from "../../utilities/methods";
@@ -135,7 +136,7 @@ function Game() {
   };
 
   /* Game */
-  const gameBoard = () => {
+  const gameSquares = () => {
     return matrix.map((col) => (
       <div className="game-row" key={col.colId}>
         {col.colRow.rowSquares.map((square) => (
@@ -161,22 +162,24 @@ function Game() {
       }
     }
   };
-
   const handleRestart = () => {
     setMatrix(originalMatrix);
     setWinnerType(undefined);
-    console.log("restarted");
   };
+
   /* Lifecycle */
   useEffect(() => {
-    gameBoard();
+    gameSquares();
     checkWinner();
   }, [matrix, lastType]);
 
   return (
     <div id="game-container">
-      <div className="game-info"></div>
-      {gameBoard()}
+      <Info
+        turn={lastType === "cross" ? "oval" : "cross"}
+        pressedRestart={() => handleRestart()}
+      />
+      <div id="game-squares-container">{gameSquares()}</div>
       <div className="game-score"></div>
       <GameResult winnerType={winnerType} onExited={() => handleRestart()} />
     </div>

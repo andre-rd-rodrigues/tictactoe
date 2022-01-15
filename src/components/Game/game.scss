@@ -1,10 +1,16 @@
 #game-container {
-  display: flex;
+  display: block;
 }
-
+#game-squares-container {
+  display: flex;
+  margin: 20px 0;
+}
+.game-row {
+  margin: 0 7.5px;
+}
 .game-square {
   background-color: $dark-variant;
-  margin: 15px 15px 15px 0px;
+  margin-bottom: 15px;
   height: 100px;
   width: 100px;
   box-shadow: 0 5px 3px rgba(0, 0, 0, 0.349);
