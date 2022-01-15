@@ -4,6 +4,7 @@ import cross from "../../assets/img/cross.png";
 import oval from "../../assets/img/o.png";
 import { allEqual } from "../../utilities/methods";
 import { originalMatrix } from "../../utilities/localDb";
+const cloneDeep = require("lodash.clonedeep");
 
 function Game() {
   const [matrix, setMatrix] = useState([
@@ -47,7 +48,7 @@ function Game() {
 
   /* Select */
   const handleSelect = (colId, squareId) => {
-    let matrixCopy = matrix;
+    let matrixCopy = cloneDeep(matrix);
     let matrixCol = matrixCopy[colId - 1];
     const squareIndex = matrixCol.colRow.rowSquares.findIndex(
       (item) => item.id === squareId
@@ -130,7 +131,7 @@ function Game() {
     };
 
     if (checkVerticalWin() || checkHorizontalWin() || checkDiagonalWin())
-      return setWinnerType(lastType);
+      return !winnerType && setWinnerType(lastType);
   };
 
   /* Game */
@@ -161,29 +162,23 @@ function Game() {
     }
   };
 
-  /* Modal action */
-  const handleModalButtonPressed = (action) => {
+  const handleRestart = () => {
     setMatrix(originalMatrix);
+    setWinnerType(undefined);
+    console.log("restarted");
   };
-
   /* Lifecycle */
   useEffect(() => {
     gameBoard();
-  }, [matrix]);
-
-  useEffect(() => {
     checkWinner();
-  }, [lastType]);
+  }, [matrix, lastType]);
 
   return (
     <div id="game-container">
       <div className="game-info"></div>
       {gameBoard()}
       <div className="game-score"></div>
-      <GameResult
-        winnerType={winnerType}
-        buttonPressed={(action) => handleModalButtonPressed(action)}
-      />
+      <GameResult winnerType={winnerType} onExited={() => handleRestart()} />
     </div>
   );
 }

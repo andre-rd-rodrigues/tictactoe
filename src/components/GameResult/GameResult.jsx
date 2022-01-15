@@ -3,24 +3,31 @@ import { Modal } from "react-bootstrap";
 import cross from "../../assets/img/cross.png";
 import oval from "../../assets/img/o.png";
 
-function GameResult({ winnerType, buttonPressed }) {
+function GameResult(props) {
   const [show, setShow] = useState(false);
 
+  const { winnerType } = props;
+
+  /* Render icon type */
   const renderWinnerTypeIcon = () => {
     switch (winnerType) {
       case "cross":
         return <img src={cross} />;
-      default:
+      case "oval":
         return <img src={oval} />;
+      default:
+        return;
     }
   };
 
+  /* Lifecycle */
   useEffect(() => {
-    if (winnerType) return setShow(true);
+    if (winnerType && !show) return setShow(true);
+    return setShow(false);
   }, [winnerType]);
 
   return (
-    <Modal show={show} dialogClassName="game-result" centered>
+    <Modal show={show} dialogClassName="game-result" centered {...props}>
       <Modal.Header>
         <Modal.Title>
           <h2>YOU WON!</h2>
@@ -37,28 +44,15 @@ function GameResult({ winnerType, buttonPressed }) {
             </h1>
           </div>
           <div className="game-result-actions">
-            <button
-              className="btn-grey"
-              onClick={() => {
-                setShow(false);
-                buttonPressed("quit");
-              }}
-            >
+            <button className="btn-grey" onClick={() => setShow(false)}>
               QUIT
             </button>
-            <button
-              className="btn-yellow"
-              onClick={() => {
-                setShow(false);
-                buttonPressed("again");
-              }}
-            >
+            <button className="btn-yellow" onClick={() => setShow(false)}>
               NEXT ROUND
             </button>
           </div>
         </div>
       </Modal.Body>
-      <Modal.Footer></Modal.Footer>
     </Modal>
   );
 }
