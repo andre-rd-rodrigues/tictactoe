@@ -43,8 +43,12 @@ function Game() {
       }
     }
   ]);
-  const [lastType, setLastType] = useState("oval");
+  const [lastestType, setLastestType] = useState("oval");
   const [userType, setUserType] = useState(undefined);
+  const [points, setPoints] = useState({
+    user: 0,
+    cpu: 0
+  });
   const [winnerType, setWinnerType] = useState(undefined);
 
   /* Select */
@@ -54,23 +58,23 @@ function Game() {
     const squareIndex = matrixCol.colRow.rowSquares.findIndex(
       (item) => item.id === squareId
     );
-    const selected = matrixCol.colRow.rowSquares[squareIndex].selected;
+
     const type = matrixCol.colRow.rowSquares[squareIndex].type;
 
-    matrixCol.colRow.rowSquares[squareIndex].selected = !selected;
-    matrixCol.colRow.rowSquares[squareIndex].type = changeType(type);
+    if (!type) {
+      matrixCol.colRow.rowSquares[squareIndex].selected = true;
+      matrixCol.colRow.rowSquares[squareIndex].type = changeType(type);
 
-    return setMatrix(matrixCopy);
+      return setMatrix(matrixCopy);
+    }
   };
   const changeType = (currentType) => {
-    if (currentType) {
-      return;
-    } else {
-      if (lastType === "cross") {
-        setLastType("oval");
+    if (!currentType) {
+      if (lastestType === "cross") {
+        setLastestType("oval");
         return "oval";
       } else {
-        setLastType("cross");
+        setLastestType("cross");
         return "cross";
       }
     }
@@ -132,7 +136,7 @@ function Game() {
     };
 
     if (checkVerticalWin() || checkHorizontalWin() || checkDiagonalWin())
-      return !winnerType && setWinnerType(lastType);
+      return !winnerType && setWinnerType(lastestType);
   };
 
   /* Game */
@@ -171,12 +175,12 @@ function Game() {
   useEffect(() => {
     gameSquares();
     checkWinner();
-  }, [matrix, lastType]);
+  }, [matrix, lastestType]);
 
   return (
     <div id="game-container">
       <Info
-        turn={lastType === "cross" ? "oval" : "cross"}
+        turn={lastestType === "cross" ? "oval" : "cross"}
         pressedRestart={() => handleRestart()}
       />
       <div id="game-squares-container">{gameSquares()}</div>
