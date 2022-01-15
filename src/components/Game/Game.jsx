@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import GameResult from "../GameResult/GameResult";
+import GameWinnerModal from "../GameWinnerModal/GameWinnerModal";
 import Info from "../GameInfo/Info";
 import cross from "../../assets/img/cross.png";
 import oval from "../../assets/img/o.png";
 import { allEqual } from "../../utilities/methods";
 import { originalMatrix } from "../../utilities/localDb";
+import GameTieModal from "../GameTieModal/GameTieModal";
 const cloneDeep = require("lodash.clonedeep");
 const random = require("lodash.random");
 const Game = () => {
@@ -232,7 +233,11 @@ const Game = () => {
       />
       <div id="game-squares-container">{gameSquares()}</div>
       <div className="game-score"></div>
-      <GameResult winnerType={winnerType} onExited={() => handleRestart()} />
+      <GameWinnerModal
+        winnerType={winnerType}
+        onExited={() => handleRestart()}
+      />
+      <GameTieModal tie={tie} onExited={() => handleRestart()} />
     </div>
   );
 };

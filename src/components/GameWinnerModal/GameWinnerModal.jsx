@@ -3,7 +3,7 @@ import { Modal } from "react-bootstrap";
 import cross from "../../assets/img/cross.png";
 import oval from "../../assets/img/o.png";
 
-function GameResult(props) {
+function GameWinnerModal(props) {
   const [show, setShow] = useState(false);
 
   const { winnerType } = props;
@@ -57,4 +57,4 @@ function GameResult(props) {
   );
 }
 
-export default GameResult;
+export default GameWinnerModal;
