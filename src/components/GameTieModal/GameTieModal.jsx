@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Modal } from "react-bootstrap";
 //styles in gamewinnermodal.scss
 
-const GameTieModal = ({ tie }) => {
+const GameTieModal = (props) => {
   const [show, setShow] = useState(false);
 
+  const { tie } = props;
   /* Lifecycle */
   useEffect(() => {
     if (tie) return setShow(true);
@@ -12,7 +13,7 @@ const GameTieModal = ({ tie }) => {
   }, [tie]);
 
   return (
-    <Modal show={show} dialogClassName="game-result" centered>
+    <Modal show={show} dialogClassName="game-result" centered {...props}>
       <Modal.Header>
         <Modal.Title>
           <h2>NO WINNER</h2>

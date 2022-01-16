@@ -3,11 +3,14 @@ import GameWinnerModal from "../GameWinnerModal/GameWinnerModal";
 import Info from "../GameInfo/Info";
 import cross from "../../assets/img/cross.png";
 import oval from "../../assets/img/o.png";
-import { allEqual } from "../../utilities/methods";
+import { allEqual, updatePoints } from "../../utilities/methods";
 import { originalMatrix } from "../../utilities/localDb";
 import GameTieModal from "../GameTieModal/GameTieModal";
+import GameScore from "../GameScore/GameScore";
+
 const cloneDeep = require("lodash.clonedeep");
 const random = require("lodash.random");
+
 const Game = () => {
   const [matrix, setMatrix] = useState([
     {
@@ -47,7 +50,8 @@ const Game = () => {
   const [lastestType, setLastestType] = useState("oval");
   const [points, setPoints] = useState({
     user: 0,
-    cpu: 0
+    cpu: 0,
+    ties: 0
   });
   const [winnerType, setWinnerType] = useState(undefined);
   const [tie, setTie] = useState(false);
@@ -84,61 +88,69 @@ const Game = () => {
 
   /* Check winner */
   const checkWinner = () => {
-    const checkVerticalWin = () => {
-      const columnsArray = matrix.map((col) =>
-        col.colRow.rowSquares.map((square) => square)
-      );
-      const isWinner = columnsArray.map((col) => allEqual(col)).includes(true);
-      return isWinner;
-    };
-    const checkHorizontalWin = () => {
-      const rowSquares = matrix.flatMap((col) => col.colRow.rowSquares);
-      let rowSquaresArray = [];
+    if (!winnerType) {
+      const checkVerticalWin = () => {
+        const columnsArray = matrix.map((col) =>
+          col.colRow.rowSquares.map((square) => square)
+        );
+        const isWinner = columnsArray
+          .map((col) => allEqual(col))
+          .includes(true);
+        return isWinner;
+      };
+      const checkHorizontalWin = () => {
+        const rowSquares = matrix.flatMap((col) => col.colRow.rowSquares);
+        let rowSquaresArray = [];
 
-      for (let index = 0; index < 3; index++) {
-        let row = [];
-        for (let i = 1; i < rowSquares.length; i += 3) {
-          row.push(rowSquares[i - 1 + index]);
+        for (let index = 0; index < 3; index++) {
+          let row = [];
+          for (let i = 1; i < rowSquares.length; i += 3) {
+            row.push(rowSquares[i - 1 + index]);
+          }
+          rowSquaresArray.push(row);
         }
-        rowSquaresArray.push(row);
+
+        const isWinner = rowSquaresArray
+          .map((col) => allEqual(col))
+          .includes(true);
+        return isWinner;
+      };
+      const checkDiagonalWin = () => {
+        const rowSquares = matrix.flatMap((col) => col.colRow.rowSquares);
+
+        const getFirstSequence = () => {
+          let firstSequence = [];
+          for (let i = 1; i <= 9; i += 4) {
+            firstSequence.push(rowSquares[i - 1]);
+          }
+          return firstSequence;
+        };
+        const getSecondSequence = () => {
+          let secondSequence = [];
+          for (let i = 3; i <= 7; i += 2) {
+            secondSequence.push(rowSquares[i - 1]);
+          }
+          return secondSequence;
+        };
+
+        const isWinner = () => {
+          const firstSequence = allEqual(getFirstSequence());
+          const secondSequence = allEqual(getSecondSequence());
+
+          if (firstSequence || secondSequence) return true;
+          return false;
+        };
+
+        return isWinner();
+      };
+
+      if (checkVerticalWin() || checkHorizontalWin() || checkDiagonalWin()) {
+        setWinnerType(lastestType);
+        return lastestType === userType
+          ? setPoints(updatePoints("user", points))
+          : setPoints(updatePoints("cpu", points));
       }
-
-      const isWinner = rowSquaresArray
-        .map((col) => allEqual(col))
-        .includes(true);
-      return isWinner;
-    };
-    const checkDiagonalWin = () => {
-      const rowSquares = matrix.flatMap((col) => col.colRow.rowSquares);
-
-      const getFirstSequence = () => {
-        let firstSequence = [];
-        for (let i = 1; i <= 9; i += 4) {
-          firstSequence.push(rowSquares[i - 1]);
-        }
-        return firstSequence;
-      };
-      const getSecondSequence = () => {
-        let secondSequence = [];
-        for (let i = 3; i <= 7; i += 2) {
-          secondSequence.push(rowSquares[i - 1]);
-        }
-        return secondSequence;
-      };
-
-      const isWinner = () => {
-        const firstSequence = allEqual(getFirstSequence());
-        const secondSequence = allEqual(getSecondSequence());
-
-        if (firstSequence || secondSequence) return true;
-        return false;
-      };
-
-      return isWinner();
-    };
-
-    if (checkVerticalWin() || checkHorizontalWin() || checkDiagonalWin())
-      return !winnerType && setWinnerType(lastestType);
+    }
   };
 
   /* Game */
@@ -174,43 +186,49 @@ const Game = () => {
     setLastestType("oval");
   };
   const randomChoice = () => {
-    let matrixCopy = cloneDeep(matrix);
+    if (lastestType === "cross") {
+      setLastestType("oval");
 
-    const allEmptySquares = matrixCopy.flatMap((col) =>
-      col.colRow.rowSquares.filter((square) => !square.selected)
-    );
+      let matrixCopy = cloneDeep(matrix);
 
-    if (allEmptySquares.length === 0) return setTie(true);
+      const allEmptySquares = matrixCopy.flatMap((col) =>
+        col.colRow.rowSquares.filter((square) => !square.selected)
+      );
 
-    const randomEmptyIndex = random(0, allEmptySquares.length - 1);
-    const randomSquareId = allEmptySquares[randomEmptyIndex].id;
-
-    const emptyRandomSquareCoordenates = () => {
-      const coordenates = [];
-      for (let i = 0; i < matrixCopy.length; i++) {
-        matrixCopy[i].colRow.rowSquares.forEach((element, index) => {
-          if (element.id === randomSquareId)
-            return coordenates.push(matrixCopy[i]);
-        });
+      if (allEmptySquares.length === 0 && !winnerType) {
+        setPoints(updatePoints("ties", points));
+        return setTie(true);
       }
-      return coordenates[0];
-    };
-    const randomSquareColIndex = matrixCopy.findIndex(
-      (col) => col.colId === emptyRandomSquareCoordenates().colId
-    );
-    const randomSquareRowIndex = matrixCopy[
-      randomSquareColIndex
-    ].colRow.rowSquares.findIndex((square) => square.id === randomSquareId);
 
-    matrixCopy[randomSquareColIndex].colRow.rowSquares[
-      randomSquareRowIndex
-    ].selected = true;
-    matrixCopy[randomSquareColIndex].colRow.rowSquares[
-      randomSquareRowIndex
-    ].type = "oval";
+      const randomEmptyIndex = random(0, allEmptySquares.length - 1);
+      const randomSquareId = allEmptySquares[randomEmptyIndex].id;
 
-    setMatrix(matrixCopy);
-    setLastestType("oval");
+      const emptyRandomSquareCoordenates = () => {
+        const coordenates = [];
+        for (let i = 0; i < matrixCopy.length; i++) {
+          matrixCopy[i].colRow.rowSquares.forEach((element, index) => {
+            if (element.id === randomSquareId)
+              return coordenates.push(matrixCopy[i]);
+          });
+        }
+        return coordenates[0];
+      };
+      const randomSquareColIndex = matrixCopy.findIndex(
+        (col) => col.colId === emptyRandomSquareCoordenates().colId
+      );
+      const randomSquareRowIndex = matrixCopy[
+        randomSquareColIndex
+      ].colRow.rowSquares.findIndex((square) => square.id === randomSquareId);
+
+      matrixCopy[randomSquareColIndex].colRow.rowSquares[
+        randomSquareRowIndex
+      ].selected = true;
+      matrixCopy[randomSquareColIndex].colRow.rowSquares[
+        randomSquareRowIndex
+      ].type = "oval";
+
+      setMatrix(matrixCopy);
+    }
   };
 
   /* Lifecycle */
@@ -232,7 +250,7 @@ const Game = () => {
         pressedRestart={() => handleRestart()}
       />
       <div id="game-squares-container">{gameSquares()}</div>
-      <div className="game-score"></div>
+      <GameScore points={points} />
       <GameWinnerModal
         winnerType={winnerType}
         onExited={() => handleRestart()}

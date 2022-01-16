@@ -3,7 +3,7 @@
 }
 #game-squares-container {
   display: flex;
-  margin: 20px 0;
+  margin: 20px 0 10px 0;
 }
 .game-row {
   margin: 0 7.5px;
@@ -25,5 +25,6 @@
   justify-content: center;
   & img {
     width: 50px;
+    animation: appear 0.3s;
   }
 }
