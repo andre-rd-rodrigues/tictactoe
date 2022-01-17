@@ -64,13 +64,21 @@ const Game = ({ userMark, gameType }) => {
       (item) => item.id === squareId
     );
 
-    const type = matrixCol.colRow.rowSquares[squareIndex].type;
+    const filledSquareType =
+      matrixCol.colRow.rowSquares[squareIndex].filledSquareType;
 
-    if (!type) {
+    //Player vs Player
+    if (gameType === "player" && !filledSquareType) {
+      matrixCol.colRow.rowSquares[squareIndex].selected = true;
+      matrixCol.colRow.rowSquares[squareIndex].type = lastestType;
+      setLastestType(lastestType === "cross" ? "oval" : "cross");
+      setMatrix(matrixCopy);
+      //Player vs CPU
+    } else if (!filledSquareType) {
       matrixCol.colRow.rowSquares[squareIndex].selected = true;
       matrixCol.colRow.rowSquares[squareIndex].type = userMark;
       setLastestType(userMark === "cross" ? "oval" : "cross");
-      return setMatrix(matrixCopy);
+      setMatrix(matrixCopy);
     }
   };
 
@@ -188,7 +196,7 @@ const Game = ({ userMark, gameType }) => {
   const handleRestart = () => {
     setMatrix(originalMatrix);
     setWinnerType(undefined);
-    setLastestType(userMark !== "cross" ? "cross" : "oval");
+    return setLastestType(userMark === "oval" ? "cross" : userMark);
   };
   const randomChoice = () => {
     if (lastestType !== userMark && !checkWinner() && gameType === "cpu") {
