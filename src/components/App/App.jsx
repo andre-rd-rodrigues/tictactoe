@@ -13,7 +13,7 @@ const App = () => {
   return (
     <div id="app">
       {userSelectedGame ? (
-        <Game selectedType={userSelectedType} gameType={userSelectedGame} />
+        <Game userMark={userSelectedType} gameType={userSelectedGame} />
       ) : (
         <WelcomeScreen
           userSeletedType={(selected) => handleSeletedType(selected)}

@@ -11,7 +11,7 @@ import GameScore from "../GameScore/GameScore";
 const cloneDeep = require("lodash.clonedeep");
 const random = require("lodash.random");
 
-const Game = () => {
+const Game = ({ userMark, gameType }) => {
   const [matrix, setMatrix] = useState([
     {
       colId: 1,
@@ -47,7 +47,7 @@ const Game = () => {
       }
     }
   ]);
-  const [lastestType, setLastestType] = useState("oval");
+  const [lastestType, setLastestType] = useState("cross");
   const [points, setPoints] = useState({
     user: 0,
     cpu: 0,
@@ -55,7 +55,6 @@ const Game = () => {
   });
   const [winnerType, setWinnerType] = useState(undefined);
   const [tie, setTie] = useState(false);
-  const [userType, setUserType] = useState("cross");
 
   /* Select */
   const handleSelect = (colId, squareId) => {
@@ -69,20 +68,9 @@ const Game = () => {
 
     if (!type) {
       matrixCol.colRow.rowSquares[squareIndex].selected = true;
-      matrixCol.colRow.rowSquares[squareIndex].type = changeType(type);
-
+      matrixCol.colRow.rowSquares[squareIndex].type = userMark;
+      setLastestType(userMark === "cross" ? "oval" : "cross");
       return setMatrix(matrixCopy);
-    }
-  };
-  const changeType = (currentType) => {
-    if (!currentType) {
-      if (lastestType === "cross") {
-        setLastestType("oval");
-        return "oval";
-      } else {
-        setLastestType("cross");
-        return "cross";
-      }
     }
   };
 
@@ -159,8 +147,8 @@ const Game = () => {
       };
 
       if (checkVerticalWin() || checkHorizontalWin() || checkDiagonalWin()) {
-        setWinnerType(lastestType);
-        lastestType === userType
+        setWinnerType(lastestType === "cross" ? "oval" : "cross");
+        lastestType === userMark
           ? setPoints(updatePoints("user", points))
           : setPoints(updatePoints("cpu", points));
         return true;
@@ -200,11 +188,13 @@ const Game = () => {
   const handleRestart = () => {
     setMatrix(originalMatrix);
     setWinnerType(undefined);
-    setLastestType("oval");
+    setLastestType(userMark !== "cross" ? "cross" : "oval");
   };
   const randomChoice = () => {
-    if (lastestType === "cross") {
-      setLastestType("oval");
+    if (lastestType !== userMark && !checkWinner() && gameType === "cpu") {
+      lastestType === "cross"
+        ? setLastestType("oval")
+        : setLastestType("cross");
 
       let matrixCopy = cloneDeep(matrix);
 
@@ -237,7 +227,7 @@ const Game = () => {
       ].selected = true;
       matrixCopy[randomSquareColIndex].colRow.rowSquares[
         randomSquareRowIndex
-      ].type = "oval";
+      ].type = userMark === "cross" ? "oval" : "cross";
 
       setMatrix(matrixCopy);
     }
@@ -247,19 +237,14 @@ const Game = () => {
   useEffect(() => {
     gameSquares();
     checkWinner();
-
-    if (lastestType === "cross" && !checkWinner())
-      return setTimeout(() => {
-        randomChoice();
-      }, [300]);
+    return setTimeout(() => {
+      randomChoice();
+    }, [300]);
   }, [matrix, lastestType]);
 
   return (
     <div id="game-container">
-      <Info
-        turn={lastestType === "cross" ? "oval" : "cross"}
-        pressedRestart={() => handleRestart()}
-      />
+      <Info turn={lastestType} pressedRestart={() => handleRestart()} />
       <div id="game-squares-container">{gameSquares()}</div>
       <GameScore points={points} />
       <GameWinnerModal
