@@ -153,6 +153,8 @@ const Game = () => {
         if (allEmptySquares.length === 0) {
           setPoints(updatePoints("ties", points));
           return true;
+        } else {
+          return false;
         }
       };
 

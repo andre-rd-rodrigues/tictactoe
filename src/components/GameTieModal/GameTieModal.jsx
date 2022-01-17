@@ -10,7 +10,6 @@ const GameTieModal = (props) => {
   /* Lifecycle */
   useEffect(() => {
     if (tie) return setShow(true);
-    return setShow(false);
   }, [tie]);
 
   return (

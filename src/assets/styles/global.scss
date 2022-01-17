@@ -5,6 +5,7 @@ $yellow: #f2b236;
 $green-light: #31c4be;
 $green-dark: #0b494d;
 $grey: #a8bec9;
+$white: #d6e2e9;
 
 @font-face {
   font-family: "Arial Rounded Bold";
@@ -14,15 +15,17 @@ $grey: #a8bec9;
 %btn {
   font-family: "Arial Rounded Bold", "Segoe UI", Tahoma, Geneva, Verdana,
     sans-serif;
-  font-weight: bold;
   font-size: 12px;
   color: $dark;
   padding: 10px 15px;
   border-radius: 7px;
   border: none;
   margin: 0 5px;
+  box-shadow: 0px 7px 0px 0px rgba(0, 0, 0, 0.336);
+  -webkit-box-shadow: 0px 7px 0px 0px rgba(0, 0, 0, 0.336);
+  -moz-box-shadow: 0px 7px 0px 0px rgba(0, 0, 0, 0.336);
   &:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
   &:active {
     transform: scale(1);
@@ -31,12 +34,14 @@ $grey: #a8bec9;
 .btn-grey {
   @extend %btn;
   background-color: $grey;
-  box-shadow: 0 5px 3px rgba(0, 0, 0, 0.349);
 }
 .btn-yellow {
   @extend %btn;
   background-color: $yellow;
-  box-shadow: 0 5px 3px rgba(0, 0, 0, 0.349);
+}
+.btn-green {
+  @extend %btn;
+  background-color: $green-light;
 }
 
 //Effects
