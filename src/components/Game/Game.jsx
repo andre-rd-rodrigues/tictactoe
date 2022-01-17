@@ -60,12 +60,15 @@ const Game = ({ userMark, gameType }) => {
   const handleSelect = (colId, squareId) => {
     let matrixCopy = cloneDeep(matrix);
     let matrixCol = matrixCopy[colId - 1];
+
     const squareIndex = matrixCol.colRow.rowSquares.findIndex(
       (item) => item.id === squareId
     );
 
-    const filledSquareType =
-      matrixCol.colRow.rowSquares[squareIndex].filledSquareType;
+    const filledSquareType = matrixCol.colRow.rowSquares[squareIndex].type;
+
+    console.log(filledSquareType);
+
     //Player vs Player
     if (gameType === "player" && !filledSquareType) {
       matrixCol.colRow.rowSquares[squareIndex].selected = true;
