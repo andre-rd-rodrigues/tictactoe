@@ -7,20 +7,18 @@ export const allEqual = (arr) =>
     }
   });
 
-export const updatePoints = (type, points) => {
+export const updatePoints = (winningType, points) => {
   let pointsCopy = points;
-  switch (type) {
-    case "ties":
-      pointsCopy.ties += 1;
+  switch (winningType) {
+    case "oval":
+      pointsCopy.cross += 1;
       return pointsCopy;
-    case "user":
-      pointsCopy.user += 1;
+    case "cross":
+      pointsCopy.oval += 1;
       return pointsCopy;
-    case "cpu":
-      pointsCopy.cpu += 1;
-      return pointsCopy;
-
     default:
-      break;
+      pointsCopy.ties += 1;
+
+      return pointsCopy;
   }
 };

@@ -25,7 +25,7 @@ const WelcomeScreen = ({ userSeletedType, gameTypeSelected }) => {
           className="btn-green"
           onClick={() => gameTypeSelected("player")}
         >
-          NEW GAME (VS PLAYEER)
+          NEW GAME (VS PLAYER)
         </button>
       </div>
     </div>

@@ -49,8 +49,8 @@ const Game = ({ userMark, gameType }) => {
   ]);
   const [lastestType, setLastestType] = useState("cross");
   const [points, setPoints] = useState({
-    user: 0,
-    cpu: 0,
+    cross: 0,
+    oval: 0,
     ties: 0
   });
   const [winnerType, setWinnerType] = useState(undefined);
@@ -66,19 +66,18 @@ const Game = ({ userMark, gameType }) => {
 
     const filledSquareType =
       matrixCol.colRow.rowSquares[squareIndex].filledSquareType;
-
     //Player vs Player
     if (gameType === "player" && !filledSquareType) {
       matrixCol.colRow.rowSquares[squareIndex].selected = true;
       matrixCol.colRow.rowSquares[squareIndex].type = lastestType;
       setLastestType(lastestType === "cross" ? "oval" : "cross");
-      setMatrix(matrixCopy);
+      return setMatrix(matrixCopy);
       //Player vs CPU
     } else if (!filledSquareType) {
       matrixCol.colRow.rowSquares[squareIndex].selected = true;
       matrixCol.colRow.rowSquares[squareIndex].type = userMark;
       setLastestType(userMark === "cross" ? "oval" : "cross");
-      setMatrix(matrixCopy);
+      return setMatrix(matrixCopy);
     }
   };
 
@@ -156,16 +155,18 @@ const Game = ({ userMark, gameType }) => {
 
       if (checkVerticalWin() || checkHorizontalWin() || checkDiagonalWin()) {
         setWinnerType(lastestType === "cross" ? "oval" : "cross");
-        lastestType === userMark
-          ? setPoints(updatePoints("user", points))
-          : setPoints(updatePoints("cpu", points));
-        return true;
+        return setPoints(updatePoints(lastestType, points));
       } else if (checkTie()) {
-        setTie(true);
-        return true;
+        return setTie(true);
+      } else {
+        if (gameType === "cpu")
+          return setTimeout(() => {
+            randomChoice();
+          }, [100]);
       }
     }
   };
+
   /* Game */
   const gameSquares = () => {
     return matrix.map((col) => (
@@ -194,12 +195,12 @@ const Game = ({ userMark, gameType }) => {
     }
   };
   const handleRestart = () => {
-    setMatrix(originalMatrix);
     setWinnerType(undefined);
+    setMatrix(originalMatrix);
     return setLastestType(userMark === "oval" ? "cross" : userMark);
   };
   const randomChoice = () => {
-    if (lastestType !== userMark && !checkWinner() && gameType === "cpu") {
+    if (lastestType !== userMark && !winnerType && gameType === "cpu") {
       lastestType === "cross"
         ? setLastestType("oval")
         : setLastestType("cross");
@@ -244,17 +245,17 @@ const Game = ({ userMark, gameType }) => {
   /* Lifecycle */
   useEffect(() => {
     gameSquares();
-    checkWinner();
-    return setTimeout(() => {
-      randomChoice();
-    }, [300]);
   }, [matrix, lastestType]);
+
+  useEffect(() => {
+    checkWinner();
+  }, [lastestType]);
 
   return (
     <div id="game-container">
       <Info turn={lastestType} pressedRestart={() => handleRestart()} />
       <div id="game-squares-container">{gameSquares()}</div>
-      <GameScore points={points} />
+      <GameScore points={points} userMark={userMark} gameType={gameType} />
       <GameWinnerModal
         winnerType={winnerType}
         onExited={() => handleRestart()}
