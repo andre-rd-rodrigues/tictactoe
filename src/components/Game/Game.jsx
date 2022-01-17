@@ -67,8 +67,6 @@ const Game = ({ userMark, gameType }) => {
 
     const filledSquareType = matrixCol.colRow.rowSquares[squareIndex].type;
 
-    console.log(filledSquareType);
-
     //Player vs Player
     if (gameType === "player" && !filledSquareType) {
       matrixCol.colRow.rowSquares[squareIndex].selected = true;
@@ -148,18 +146,15 @@ const Game = ({ userMark, gameType }) => {
           col.colRow.rowSquares.filter((square) => !square.selected)
         );
 
-        if (allEmptySquares.length === 0) {
-          setPoints(updatePoints("ties", points));
-          return true;
-        } else {
-          return false;
-        }
+        return allEmptySquares.length === 0 ? true : false;
       };
 
       if (checkVerticalWin() || checkHorizontalWin() || checkDiagonalWin()) {
         setWinnerType(lastestType === "cross" ? "oval" : "cross");
         return setPoints(updatePoints(lastestType, points));
       } else if (checkTie()) {
+        console.log("Runned tie:", tie);
+        setPoints(updatePoints("ties", points));
         return setTie(true);
       } else {
         if (gameType === "cpu")
@@ -252,7 +247,7 @@ const Game = ({ userMark, gameType }) => {
 
   useEffect(() => {
     checkWinner();
-  }, [lastestType]);
+  }, [matrix]);
 
   return (
     <div id="game-container">
@@ -262,6 +257,8 @@ const Game = ({ userMark, gameType }) => {
       <GameWinnerModal
         winnerType={winnerType}
         onExited={() => handleRestart()}
+        userMark={userMark}
+        gameType={gameType}
       />
       <GameTieModal tie={tie} onExited={() => handleRestart()} />
     </div>

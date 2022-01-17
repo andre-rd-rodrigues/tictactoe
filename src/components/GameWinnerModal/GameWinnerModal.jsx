@@ -6,7 +6,7 @@ import oval from "../../assets/img/o.png";
 function GameWinnerModal(props) {
   const [show, setShow] = useState(false);
 
-  const { winnerType } = props;
+  const { winnerType, gameType, userMark } = props;
 
   /* Render icon type */
   const renderWinnerTypeIcon = () => {
@@ -17,6 +17,13 @@ function GameWinnerModal(props) {
         return <img src={oval} />;
       default:
         return;
+    }
+  };
+  const ResultMessage = () => {
+    if (gameType === "cpu") {
+      return <h2>{userMark === winnerType ? "YOU WON!" : "YOU LOOSE"}</h2>;
+    } else {
+      return <h2>`${winnerType === "cross" ? "CROSS" : "CIRCLE"} WINS!`</h2>;
     }
   };
 
@@ -30,7 +37,7 @@ function GameWinnerModal(props) {
     <Modal show={show} dialogClassName="game-result" centered {...props}>
       <Modal.Header>
         <Modal.Title>
-          <h2>YOU WON!</h2>
+          <ResultMessage />
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -44,7 +51,10 @@ function GameWinnerModal(props) {
             </h1>
           </div>
           <div className="game-result-actions">
-            <button className="btn-grey" onClick={() => setShow(false)}>
+            <button
+              className="btn-grey"
+              onClick={() => window.location.reload()}
+            >
               QUIT
             </button>
             <button className="btn-yellow" onClick={() => setShow(false)}>
