@@ -143,16 +143,31 @@ const Game = () => {
 
         return isWinner();
       };
+      const checkTie = () => {
+        let matrixCopy = cloneDeep(matrix);
+
+        const allEmptySquares = matrixCopy.flatMap((col) =>
+          col.colRow.rowSquares.filter((square) => !square.selected)
+        );
+
+        if (allEmptySquares.length === 0) {
+          setPoints(updatePoints("ties", points));
+          return true;
+        }
+      };
 
       if (checkVerticalWin() || checkHorizontalWin() || checkDiagonalWin()) {
         setWinnerType(lastestType);
-        return lastestType === userType
+        lastestType === userType
           ? setPoints(updatePoints("user", points))
           : setPoints(updatePoints("cpu", points));
+        return true;
+      } else if (checkTie()) {
+        setTie(true);
+        return true;
       }
     }
   };
-
   /* Game */
   const gameSquares = () => {
     return matrix.map((col) => (
@@ -195,11 +210,6 @@ const Game = () => {
         col.colRow.rowSquares.filter((square) => !square.selected)
       );
 
-      if (allEmptySquares.length === 0 && !winnerType) {
-        setPoints(updatePoints("ties", points));
-        return setTie(true);
-      }
-
       const randomEmptyIndex = random(0, allEmptySquares.length - 1);
       const randomSquareId = allEmptySquares[randomEmptyIndex].id;
 
@@ -235,14 +245,13 @@ const Game = () => {
   useEffect(() => {
     gameSquares();
     checkWinner();
-  }, [matrix, lastestType]);
 
-  useEffect(() => {
-    if (lastestType === "cross" && !winnerType)
+    if (lastestType === "cross" && !checkWinner())
       return setTimeout(() => {
         randomChoice();
       }, [300]);
-  }, [lastestType]);
+  }, [matrix, lastestType]);
+
   return (
     <div id="game-container">
       <Info

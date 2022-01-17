@@ -6,6 +6,7 @@ const GameTieModal = (props) => {
   const [show, setShow] = useState(false);
 
   const { tie } = props;
+
   /* Lifecycle */
   useEffect(() => {
     if (tie) return setShow(true);
