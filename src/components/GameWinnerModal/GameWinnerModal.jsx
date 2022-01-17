@@ -8,7 +8,7 @@ function GameWinnerModal(props) {
 
   const { winnerType, gameType, userMark } = props;
 
-  /* Render icon type */
+  /* Render */
   const renderWinnerTypeIcon = () => {
     switch (winnerType) {
       case "cross":
