@@ -153,7 +153,6 @@ const Game = ({ userMark, gameType }) => {
         setWinnerType(lastestType === "cross" ? "oval" : "cross");
         return setPoints(updatePoints(lastestType, points));
       } else if (checkTie()) {
-        console.log("Runned tie:", tie);
         setPoints(updatePoints("ties", points));
         return setTie(true);
       } else {
@@ -195,6 +194,7 @@ const Game = ({ userMark, gameType }) => {
   const handleRestart = () => {
     setWinnerType(undefined);
     setMatrix(originalMatrix);
+    setTie(false);
     return setLastestType(userMark === "oval" ? "cross" : userMark);
   };
   const randomChoice = () => {
