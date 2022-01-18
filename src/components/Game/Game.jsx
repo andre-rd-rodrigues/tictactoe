@@ -195,6 +195,7 @@ const Game = ({ userMark, gameType }) => {
   const handleRestart = () => {
     setWinnerType(undefined);
     setMatrix(originalMatrix);
+    setTie(false);
     return setLastestType(userMark === "oval" ? "cross" : userMark);
   };
   const randomChoice = () => {
