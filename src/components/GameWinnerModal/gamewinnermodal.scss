@@ -51,3 +51,14 @@
 .game-result-actions {
   text-align: center;
 }
+
+@media only screen and (max-width: 336px) {
+  .game-result-winner {
+    & h1 {
+      font-size: 25px;
+    }
+    & img {
+      width: 35px !important;
+    }
+  }
+}

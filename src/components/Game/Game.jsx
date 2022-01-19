@@ -160,7 +160,7 @@ const Game = ({ userMark, gameType }) => {
         if (gameType === "cpu")
           return setTimeout(() => {
             randomChoice();
-          }, [100]);
+          }, [200]);
       }
     }
   };
