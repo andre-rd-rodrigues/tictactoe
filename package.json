@@ -1,7 +1,12 @@
 {
   "name": "tic-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
+  "homepage": "https://andre-rd-rodrigues.github.io/tictactoe/",
+  "author": {
+    "name": "Andre Rodrigues",
+    "url": "https://andre-rd-rodrigues.github.io/portfolio/"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
