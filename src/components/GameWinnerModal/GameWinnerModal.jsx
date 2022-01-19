@@ -23,7 +23,7 @@ function GameWinnerModal(props) {
     if (gameType === "cpu") {
       return <h2>{userMark === winnerType ? "YOU WON!" : "YOU LOOSE"}</h2>;
     } else {
-      return <h2>`${winnerType === "cross" ? "CROSS" : "CIRCLE"} WINS!`</h2>;
+      return <h2>{winnerType === "cross" ? "CROSS" : "CIRCLE"} WINS!</h2>;
     }
   };
 
